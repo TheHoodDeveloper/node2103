@@ -1,38 +1,38 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
     firstname: {
       type: String,
       trim: true,
-      required: [true, 'firstname is required'],
+      required: [true, "firstname is required"],
     },
     lastname: {
       type: String,
       trim: true,
-      required: [true, 'lastname is required'],
+      required: [true, "lastname is required"],
     },
     username: {
       type: String,
       trim: true,
-      required: [true, 'username is required'],
+      required: [true, "username is required"],
     },
     email: {
       type: String,
       trim: true,
-      unique: [true, 'email has been taken'],
-      required: [true, 'email is required'],
+      unique: [true, "email has been taken"],
+      required: [true, "email is required"],
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
-      default: 'user',
+      enum: ["user", "admin"],
+      default: "user",
     },
     profile_img: String,
     password: {
       type: String,
-      required: [true, 'password is required'],
+      required: [true, "password is required"],
       min: 6,
       max: 12,
     },
@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema(
 );
 
 //pre save middleware
-userSchema.pre('save', async function (next) {
+userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   return next();
 });
@@ -66,5 +66,5 @@ userSchema.methods.comparePassword = async function (
   return bcrypt.compare(inputPassword, userPassword);
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 module.exports = User;

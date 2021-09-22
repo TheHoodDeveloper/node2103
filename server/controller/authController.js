@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
-const User = require('../models/User');
-const ApiError = require('../utils/errorHandler');
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const User = require("../models/User");
+const ApiError = require("../utils/errorHandler");
 
 const signToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -14,7 +14,7 @@ exports.register = async (req, res, next) => {
     const { body } = req;
     const userExist = await User.findOne({ email: body.email });
     if (userExist) {
-      return next(body.email + ' is taken');
+      return next(body.email + " is taken");
     }
 
     const user = new User({
@@ -29,7 +29,7 @@ exports.register = async (req, res, next) => {
     await user.save();
     user.password = undefined;
     res.status(201).json({
-      status: 'success',
+      status: "success",
       data: user,
     });
   } catch (error) {
@@ -43,7 +43,7 @@ exports.login = async (req, res, next) => {
     const { body } = req;
     const user = await User.findOne({ email: body.email });
     if (!user) {
-      return next(new ApiError('user does not exist', 404));
+      return next(new ApiError("user does not exist", 404));
     }
 
     const comparePassword = await user.comparePassword(
@@ -52,12 +52,12 @@ exports.login = async (req, res, next) => {
     );
 
     if (!comparePassword) {
-      return next(new Error('incorrect credentials'));
+      return next(new Error("incorrect credentials"));
     }
     user.password = undefined;
     let token = signToken(user._id);
     res.status(200).json({
-      status: 'success',
+      status: "success",
       data: user,
       token,
     });
@@ -71,20 +71,20 @@ exports.authorization = async (req, res, next) => {
     let token;
     if (
       req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
+      req.headers.authorization.startsWith("Bearer")
     ) {
-      token = req.headers.authorization.split(' ')[1];
+      token = req.headers.authorization.split(" ")[1];
     }
 
     if (!token) {
-      return next(new Error('please login to view this resource'));
+      return next(new Error("please login to view this resource"));
     }
 
     let decoded = await jwt.verify(token, process.env.JWT_SECRET);
     const currentUser = await User.findById({ _id: decoded.id });
 
     if (!currentUser) {
-      return next(new Error('user does not exist'));
+      return next(new Error("user does not exist"));
     }
 
     req.user = currentUser;
@@ -99,11 +99,11 @@ exports.authorization = async (req, res, next) => {
  * @param  {...string} roles a collection of restricted roles
  * @returns express response
  */
-exports.roles = (...roles) => {
-  return (req, res, next) => {
-    if (roles.includes(req.user.roles)) {
-      return next(new ApiError('forbidden', 403));
-    }
-    return next();
-  };
-};
+// exports.roles = (...roles) => {
+//   return (req, res, next) => {
+//     if (roles.includes(req.user.roles)) {
+//       return next(new ApiError("forbidden", 403));
+//     }
+//     return next();
+//   };
+// };

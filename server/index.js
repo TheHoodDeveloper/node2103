@@ -1,6 +1,7 @@
 const express = require("express"); //import express
 const path = require("path");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const postsRoutes = require("./routes/posts.routes");
 const userRoutes = require("./routes/user.routes");
@@ -11,9 +12,13 @@ const app = express();
 //post middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 //static route middleware
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "../uploads/pictures"))
+);
 
 //global vars
 app.use((req, res, next) => {
