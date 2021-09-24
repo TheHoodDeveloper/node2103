@@ -1,16 +1,10 @@
 import { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
-import { Route } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
 import axios from "axios";
+import LeftComponent from "./LeftComponent";
+import RightComponent from "./RightComponent";
 
-import Navigation from "./components/Navigation";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Main from "./components/Main";
-
-function App() {
+function Main() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
@@ -20,7 +14,6 @@ function App() {
     axios
       .get("http://localhost:5000/api/post")
       .then(({ data }) => {
-        console.log(data);
         setPost(data?.data);
         setLoading(!loading);
       })
@@ -29,17 +22,29 @@ function App() {
         setShow(!show);
       });
   }, []);
-
+  //   console.log(post);
   return (
     <div id="main">
-      <Navigation />
-      <div className="mt-4 container">
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/register" component={Register} />
-        <Route path="/main" component={Main} />
-      </div>
+      <Row>
+        <Col md={9}>
+          <LeftComponent
+            post={post}
+            error={err}
+            loading={loading}
+            show={show}
+          />
+        </Col>
+        <Col md={3}>
+          <RightComponent
+            post={post}
+            error={err}
+            loading={loading}
+            show={show}
+          />
+        </Col>
+      </Row>
     </div>
   );
 }
 
-export default App;
+export default Main;

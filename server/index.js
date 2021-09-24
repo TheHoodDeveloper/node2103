@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 });
 
 //routes middleware
-app.use("/post", postsRoutes);
+app.use("/api/post", postsRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/category", categoryRoutes);
 

@@ -9,7 +9,9 @@ exports.getAllPost = async (req, res, next) => {
         path: "user",
         select: "username _id",
       })
-      .populate({ path: "category", select: "_id title" });
+      .populate({ path: "category", select: "_id title" })
+      .sort({ updatedAt: -1 });
+
     if (posts.length === 0) {
       return next(new ApiError("no data found", 404));
     }
@@ -18,13 +20,13 @@ exports.getAllPost = async (req, res, next) => {
       data: posts,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 exports.getAllUsersPost = async (req, res, next) => {
   try {
     let posts = await Post.find({ user: req.params.id });
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       data: posts,
     });
@@ -36,13 +38,19 @@ exports.getAllUsersPost = async (req, res, next) => {
 exports.getSinglePost = async (req, res, next) => {
   try {
     let { id } = req.params;
-    let post = await Post.findById({ _id: id });
-    res.status(200).json({
+    let post = await Post.findById({ _id: id })
+      .populate({
+        path: "user",
+        select: "username _id",
+      })
+      .populate({ path: "category", select: "_id title" });
+
+    return res.status(200).json({
       status: "success",
-      post,
+      data: post,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
